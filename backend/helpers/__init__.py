@@ -1,6 +1,7 @@
 import ast
 import json
 import re
+import numpy as np
 def tokenize(text):
     # Starting with a simple tokenization pattern
     # This pattern does not cover all Treebank tokenizer rules but gives a basic idea
@@ -58,10 +59,8 @@ def compute_similarity_with_query(game_reviews_dict, query):
             review_scores.append(score)
 
         # Calculate the average similarity score for the game
-        if review_scores:
-            average_score = sum(review_scores) / len(review_scores)
-        else:
-            average_score = 0
+        average_score = np.average(review_scores)
+
 
         similarity_scores[game] = average_score
 
