@@ -1,6 +1,6 @@
 # import ast
 # import json
-# from nltk import TreebankWordTokenizer
+from nltk import TreebankWordTokenizer
 
 
 
