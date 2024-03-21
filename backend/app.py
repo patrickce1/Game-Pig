@@ -17,7 +17,7 @@ current_directory = os.path.dirname(os.path.abspath(__file__))
 json_file_path = os.path.join(current_directory, 'init.json')
 
 # Assuming your JSON data is stored in a file named 'init.json'
-with open('init.json', 'r') as file:
+with open(json_file_path, 'r') as file:
      data = json.load(file)
 #     episodes_df = pd.DataFrame(data['episodes'])
 #     reviews_df = pd.DataFrame(data['reviews'])
