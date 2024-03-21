@@ -40,6 +40,7 @@ def json_search(query):
     similarity_scores = compute_similarity_score(game_reviews_dict, query)
     scores_df = pd.DataFrame(similarity_scores, columns=['Game', 'Score'])
     top_matches = scores_df[scores_df['Score'] > 0]
+    top_matches = top_matches.sort_values(by='Score', ascending=False)
     top_matches_json = top_matches.to_json(orient='records')
     return top_matches_json
 @app.route("/")
