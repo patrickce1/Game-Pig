@@ -36,7 +36,7 @@ def jaccard_similarity(tokens1, tokens2):
     set2 = set(tokens2)
     return len(set1 & set2) / len(set1 | set2) if len(set1 | set2) > 0 else 0
 
-def compute_similarity_with_query(game_reviews_dict, query):
+def compute_similarity_score(game_reviews_dict, query):
     query_tokens = tokenize(query.lower())
     similarity_scores = {}
 

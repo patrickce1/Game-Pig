@@ -6,7 +6,7 @@ from flask import Flask, render_template, request
 from flask_cors import CORS
 from helpers.MySQLDatabaseHandler import MySQLDatabaseHandler
 import pandas as pd
-from helpers.__init__ import dict_creator, compute_similarity_with_query
+from helpers.__init__ import dict_creator, compute_similarity_score
 # ROOT_PATH for linking with all your files. 
 # Feel free to use a config.py or settings.py with a global export variable
 os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..",os.curdir))
@@ -37,7 +37,7 @@ def json_search(query):
     # matches_filtered = matches[['title', 'descr', 'imdb_rating']]
     # matches_filtered_json = matches_filtered.to_json(orient='records')
     # return matches_filtered_json
-    similarity_scores = compute_similarity_with_query(game_reviews_dict, query)
+    similarity_scores = compute_similarity_score(game_reviews_dict, query)
     scores_df = pd.DataFrame(similarity_scores, columns=['Game', 'Score'])
     top_matches = scores_df[scores_df['Score'] > 0]
     top_matches_json = top_matches.to_json(orient='records')
