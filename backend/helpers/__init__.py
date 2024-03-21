@@ -35,20 +35,19 @@ import re
 #         sorted_similarity_scores = sorted(similarity_scores.items(), key=lambda x: x[1], reverse=True)
 
 #     return sorted_similarity_scores
-import re
 
-def tokenize(text):
-    # Starting with a simple tokenization pattern
-    # This pattern does not cover all Treebank tokenizer rules but gives a basic idea
-    token_pattern = r'''(?x)          # Set flag to allow verbose regexps
-        (?:[A-Z]\.)+                  # Abbreviations, e.g., U.S.A.
-        | \w+(?:-\w+)*                # Words with optional internal hyphens
-        | \$?\d+(?:\.\d+)?%?          # Currency and percentages, e.g., $12.40, 82%
-        | \.\.\.                      # Ellipsis
-        | [][.,;"'?():_`-]            # These are separate tokens; includes ], [
-    '''
+# def tokenize(text):
+#     # Starting with a simple tokenization pattern
+#     # This pattern does not cover all Treebank tokenizer rules but gives a basic idea
+#     token_pattern = r'''(?x)          # Set flag to allow verbose regexps
+#         (?:[A-Z]\.)+                  # Abbreviations, e.g., U.S.A.
+#         | \w+(?:-\w+)*                # Words with optional internal hyphens
+#         | \$?\d+(?:\.\d+)?%?          # Currency and percentages, e.g., $12.40, 82%
+#         | \.\.\.                      # Ellipsis
+#         | [][.,;"'?():_`-]            # These are separate tokens; includes ], [
+#     '''
 
-    # Using regular expression to split the text into tokens
-    tokens = re.findall(token_pattern, text)
+#     # Using regular expression to split the text into tokens
+#     tokens = re.findall(token_pattern, text)
 
-    return tokens
+#     return tokens
