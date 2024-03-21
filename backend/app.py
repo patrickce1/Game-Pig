@@ -1,4 +1,6 @@
 import json
+import re 
+import ast
 import os
 from flask import Flask, render_template, request
 from flask_cors import CORS
@@ -12,7 +14,7 @@ os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..",os.curdir))
 # Get the directory of the current script
 current_directory = os.path.dirname(os.path.abspath(__file__))
 
-# Specify the path to the JSON file relative to the current script
+# # Specify the path to the JSON file relative to the current script
 json_file_path = os.path.join(current_directory, 'init.json')
 
 # Assuming your JSON data is stored in a file named 'init.json'
@@ -21,7 +23,6 @@ with open(json_file_path, 'r') as file:
     # episodes_df = pd.DataFrame(data['episodes'])
     # reviews_df = pd.DataFrame(data['reviews'])
 
-game_reviews_dict = dict_creator(data)
 
 
 app = Flask(__name__)
@@ -35,11 +36,11 @@ def json_search(query):
     # matches_filtered = matches[['title', 'descr', 'imdb_rating']]
     # matches_filtered_json = matches_filtered.to_json(orient='records')
     # return matches_filtered_json
+    game_reviews_dict = dict_creator(data)
     similarity_scores = compute_similarity_with_query(game_reviews_dict, query)
-    scores_df = pd.DataFrame(list(similarity_scores.items()), columns=['Game', 'Score'])
+    scores_df = pd.DataFrame(similarity_scores, columns=['Game', 'Score'])
     top_matches = scores_df.nlargest(3, 'Score')
     top_matches_json = top_matches.to_json(orient='records')
-    return top_matches_json
 @app.route("/")
 def home():
     return render_template('base.html',title="sample html")

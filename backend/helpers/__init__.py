@@ -1,7 +1,6 @@
 import ast
 import json
 import re
-
 def tokenize(text):
     # Starting with a simple tokenization pattern
     # This pattern does not cover all Treebank tokenizer rules but gives a basic idea
@@ -27,6 +26,7 @@ def dict_creator(data):
       tokenized_reviews = [tokenize(review) for review in reviews]
       
       game_reviews_dict[game_name] = tokenized_reviews
+  return game_reviews_dict
 
 
 
