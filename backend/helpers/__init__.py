@@ -59,7 +59,7 @@ def compute_similarity_with_query(game_reviews_dict, query):
             review_scores.append(score)
 
         # Calculate the average similarity score for the game
-        average_score = np.average(review_scores)
+        average_score = np.max(review_scores)
 
 
         similarity_scores[game] = average_score
