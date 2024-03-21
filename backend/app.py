@@ -1,11 +1,11 @@
 import json
-import ast
+#import ast
 import os
 from flask import Flask, render_template, request
 from flask_cors import CORS
 from helpers.MySQLDatabaseHandler import MySQLDatabaseHandler
 import pandas as pd
-from nltk import TreebankWordTokenizer
+#from nltk import TreebankWordTokenizer
 # ROOT_PATH for linking with all your files. 
 # Feel free to use a config.py or settings.py with a global export variable
 os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..",os.curdir))
