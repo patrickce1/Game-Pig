@@ -41,6 +41,7 @@ def json_search(query):
     scores_df = pd.DataFrame(similarity_scores, columns=['Game', 'Score'])
     top_matches = scores_df.nlargest(3, 'Score')
     top_matches_json = top_matches.to_json(orient='records')
+    return top_matches_json
 @app.route("/")
 def home():
     return render_template('base.html',title="sample html")
