@@ -22,6 +22,7 @@ with open(json_file_path, 'r') as file:
     data = json.load(file)
     # episodes_df = pd.DataFrame(data['episodes'])
     # reviews_df = pd.DataFrame(data['reviews'])
+    game_reviews_dict = dict_creator(data)
 
 
 
@@ -36,7 +37,6 @@ def json_search(query):
     # matches_filtered = matches[['title', 'descr', 'imdb_rating']]
     # matches_filtered_json = matches_filtered.to_json(orient='records')
     # return matches_filtered_json
-    game_reviews_dict = dict_creator(data)
     similarity_scores = compute_similarity_with_query(game_reviews_dict, query)
     scores_df = pd.DataFrame(similarity_scores, columns=['Game', 'Score'])
     top_matches = scores_df.nlargest(3, 'Score')
