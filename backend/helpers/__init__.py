@@ -1,5 +1,6 @@
 import ast
-#import json
+import json
+import re
 # from nltk import TreebankWordTokenizer
 
 
@@ -12,7 +13,7 @@ import ast
 #       game_name = item['Game']
 #       reviews_str = item['Review']
 #       reviews = ast.literal_eval(reviews_str)
-#       tokenized_reviews = [tokenizer.tokenize(review) for review in reviews]
+#       tokenized_reviews = [tokenize(review) for review in reviews]
       
 #       game_reviews_dict[game_name] = tokenized_reviews
 
@@ -24,7 +25,7 @@ import ast
 #     return len(set1 & set2) / len(set1 | set2) if len(set1 | set2) > 0 else 0
 
 # def compute_similarity_with_query(game_reviews_dict, query):
-#     query_tokens = tokenizer.tokenize(query.lower())
+#     query_tokens = tokenize(query.lower())
 #     similarity_scores = {}
 
 #     for game, reviews in game_reviews_dict.items():
@@ -34,3 +35,20 @@ import ast
 #         sorted_similarity_scores = sorted(similarity_scores.items(), key=lambda x: x[1], reverse=True)
 
 #     return sorted_similarity_scores
+import re
+
+def tokenize(text):
+    # Starting with a simple tokenization pattern
+    # This pattern does not cover all Treebank tokenizer rules but gives a basic idea
+    token_pattern = r'''(?x)          # Set flag to allow verbose regexps
+        (?:[A-Z]\.)+                  # Abbreviations, e.g., U.S.A.
+        | \w+(?:-\w+)*                # Words with optional internal hyphens
+        | \$?\d+(?:\.\d+)?%?          # Currency and percentages, e.g., $12.40, 82%
+        | \.\.\.                      # Ellipsis
+        | [][.,;"'?():_`-]            # These are separate tokens; includes ], [
+    '''
+
+    # Using regular expression to split the text into tokens
+    tokens = re.findall(token_pattern, text)
+
+    return tokens
