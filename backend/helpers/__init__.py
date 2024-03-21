@@ -37,35 +37,35 @@ def jaccard_similarity(tokens1, tokens2):
     return len(set1 & set2) / len(set1 | set2) if len(set1 | set2) > 0 else 0
 
 def compute_similarity_with_query(game_reviews_dict, query):
-    # query_tokens = tokenize(query.lower())
-    # similarity_scores = {}
-
-    # for game, reviews in game_reviews_dict.items():
-    #     review_tokens = [token for review in reviews for token in review]
-    #     similarity = jaccard_similarity(review_tokens, query_tokens)
-    #     similarity_scores[game] = similarity
-    #     sorted_similarity_scores = sorted(similarity_scores.items(), key=lambda x: x[1], reverse=True)
-
-    # return sorted_similarity_scores
-    query_tokens = set(tokenize(query.lower()))
+    query_tokens = tokenize(query.lower())
     similarity_scores = {}
 
     for game, reviews in game_reviews_dict.items():
-        # Compute similarity for each review and collect the scores
-        review_scores = []
-        for review in reviews:
-            review_tokens = set(tokenize(review.lower()))
-            score = jaccard_similarity(review_tokens, query_tokens)
-            review_scores.append(score)
-
-        # Calculate the average similarity score for the game
-        average_score = np.max(review_scores)
-
-
-        similarity_scores[game] = average_score
-
-    # Sort the games by their average similarity score in descending order
-    sorted_similarity_scores = sorted(similarity_scores.items(), key=lambda x: x[1], reverse=True)
+        review_tokens = [token for review in reviews for token in review]
+        similarity = jaccard_similarity(review_tokens, query_tokens)
+        similarity_scores[game] = similarity
+        sorted_similarity_scores = sorted(similarity_scores.items(), key=lambda x: x[1], reverse=True)
 
     return sorted_similarity_scores
+    # query_tokens = set(tokenize(query.lower()))
+    # similarity_scores = {}
+
+    # for game, reviews in game_reviews_dict.items():
+    #     # Compute similarity for each review and collect the scores
+    #     review_scores = []
+    #     for review in reviews:
+    #         review_tokens = set(tokenize(review.lower()))
+    #         score = jaccard_similarity(review_tokens, query_tokens)
+    #         review_scores.append(score)
+
+    #     # Calculate the average similarity score for the game
+    #     average_score = np.max(review_scores)
+
+
+    #     similarity_scores[game] = average_score
+
+    # # Sort the games by their average similarity score in descending order
+    # sorted_similarity_scores = sorted(similarity_scores.items(), key=lambda x: x[1], reverse=True)
+
+    # return sorted_similarity_scores
 
