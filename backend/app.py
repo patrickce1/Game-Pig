@@ -32,8 +32,8 @@ for item in data:
     game_reviews_dict[game_name] = tokenized_reviews
 
 # Check a few entries from the dictionary
-for game, reviews in list(game_reviews_dict.items())[:1]:
-    print(game, reviews[:2])
+# for game, reviews in list(game_reviews_dict.items())[:1]:
+#     print(game, reviews[:2])
 
 
 
@@ -58,15 +58,15 @@ def compute_similarity_with_query(game_reviews_dict, query):
 
     return sorted_similarity_scores
 
-# Example query string
-query = "action adventure"
+# # Example query string
+# query = "action adventure"
 
-# Compute the similarity scores
-similarity_scores = compute_similarity_with_query(game_reviews_dict, query)
+# # Compute the similarity scores
+# similarity_scores = compute_similarity_with_query(game_reviews_dict, query)
 
-# Display the similarity scores
-for game, score in similarity_scores[:5]:
-    print(f"{game}: {score}")
+# # Display the similarity scores
+# for game, score in similarity_scores[:5]:
+#     print(f"{game}: {score}")
 
 
 
