@@ -50,10 +50,14 @@ def compute_similarity_with_query(game_reviews_dict, query):
     similarity_scores = {}
 
     for game, reviews in game_reviews_dict.items():
-        # Calculate similarity for each review and store the scores
-        review_scores = [jaccard_similarity(set(tokenize(review.lower())), query_tokens) for review in reviews]
-        
-        # Compute the average similarity for the game
+        # Compute similarity for each review and collect the scores
+        review_scores = []
+        for review in reviews:
+            review_tokens = set(tokenize(review.lower()))
+            score = jaccard_similarity(review_tokens, query_tokens)
+            review_scores.append(score)
+
+        # Calculate the average similarity score for the game
         if review_scores:
             average_score = sum(review_scores) / len(review_scores)
         else:
@@ -61,6 +65,8 @@ def compute_similarity_with_query(game_reviews_dict, query):
 
         similarity_scores[game] = average_score
 
-    # Return the similarity scores sorted by score in descending order
-    return sorted(similarity_scores.items(), key=lambda x: x[1], reverse=True)
+    # Sort the games by their average similarity score in descending order
+    sorted_similarity_scores = sorted(similarity_scores.items(), key=lambda x: x[1], reverse=True)
+
+    return sorted_similarity_scores
 
