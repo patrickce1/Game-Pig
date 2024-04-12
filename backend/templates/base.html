@@ -45,7 +45,8 @@
         }
 
         function sendFocus() {
-            document.getElementById('filter-text-val').focus()
+
+            document.getElementById('filter-text-val').focus();
         }
 
         function filterText() {
@@ -56,6 +57,7 @@
                 .then((data) => data.forEach(row => {
 
                     let tempDiv = document.createElement("div")
+                    console.log(row)
                     tempDiv.innerHTML = answerBoxTemplate(row.Game, row.Score)
                     document.getElementById("answer-box").appendChild(tempDiv)
                 }));
