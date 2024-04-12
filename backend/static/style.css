@@ -1,91 +1,131 @@
-.full-body-container{
+.full-body-container {
     position: absolute;
-    top:0;
-    left:0;
-    right:0;
-    bottom:0;
-    width:100%;
-    height:100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
     display: flex;
     justify-content: start;
     align-items: center;
     flex-direction: column;
+    overflow: hidden;
 }
 
-#google-c{
-    color:#4285F4;
+#google-c {
+    color: #4285F4;
 }
 
-#google-s{
-    color:#DB4437;
+#google-s {
+    color: #DB4437;
 }
 
-#google-4{
-    color:	#F4B400;
+#google-4 {
+    color: #F4B400;
 }
 
-#google-3{
-    color:	#4285F4;
+#google-3 {
+    color: #4285F4;
 }
 
-#google-0-1{
-    color:	#0F9D58;
+#google-0-1 {
+    color: #0F9D58;
 }
 
-#google-0-2{
-    color:#DB4437;
+#google-0-2 {
+    color: #DB4437;
 }
 
-.google-colors{
+.google-colors {
     display: flex;
     align-items: center;
-    font-size: 48px;
+    font-size: 100px;
     font-family: 'Open Sans', sans-serif;
 }
 
-.google-colors h1{
-    margin-bottom: 0;
-    margin-right: 3px;
-}
 
-.input-box{
-    border-radius: 50px;
-    border:1px solid black;
-    display: flex;
-    align-items: center;
-    margin-top: 10px;
-    padding:12px;
-    width: 600px;
-}
-
-.input-box img{
-    height: 20px;
-    width:20px;
-}
-
-.top-text{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.input-box input{
-    width: 100%;
-    margin-left: 10px;
-    font-size: 16px;
-    border: none;
-    outline: 0;
-}
-
-#answer-box{
-    width: 700px;
-    margin-top:50px; 
-}
-
-.episode-title{
+.episode-title {
     font-family: 'Kanit', sans-serif;
 }
 
-.episode-desc{
+.episode-desc {
     font-family: 'Montserrat', sans-serif;
+}
+
+.top-text {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    flex-direction: column;
+    /* Increase the top margin */
+    margin-top: 35px;
+    /* Add top margin */
+}
+
+.google-colors h1 {
+    font-family: 'Kanit', sans-serif;
+    font-size: 110px;
+    margin: 0;
+    color: #1a73e8;
+}
+
+.input-box {
+    display: flex;
+    align-items: center;
+    padding: 30px;
+    background-color: white;
+    border-radius: 20px;
+
+    border: 2px solid black;
+
+    margin-top: 10px;
+    width: 900px;
+}
+
+.input-box img {
+    width: 25px;
+    height: 25px;
+    margin-right: 10px;
+}
+
+.input-box input {
+    width: 100%;
+    margin-left: 10px;
+    font-size: 20px;
+    border: none;
+    outline: 0;
+    background-color: transparent;
+}
+
+input[type="text"] {
+    border: none;
+    outline: none;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 20px;
+    /* Increase font size for the text input */
+    width: 300px;
+    /* Increase width of the text input */
+}
+
+#answer-box {
+    width: 100%;
+}
+
+.game_name {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 18px;
+    margin: 5px 0;
+    color: #1a73e8;
+}
+
+#background-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
