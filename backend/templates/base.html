@@ -34,13 +34,15 @@
             </div>
         </div>
         <div id="answer-box"></div>
+        <div id="imageContainer"></div>
     </div>
 
     <script>
 
         function answerBoxTemplate(Game, Score) {
             return `<div class=''>
-                <h3 class='game_name'>${Game} - ${Score} - ${getImage(Game)}</h3>
+                <h3 class='game_name'>${Game} - ${Score}</h3>
+                <div id='${Game}' height='50px'></div>
             </div>`
         }
 
@@ -60,42 +62,54 @@
                     //console.log(row)
                     tempDiv.innerHTML = answerBoxTemplate(row.Game, row.Similarity)
                     document.getElementById("answer-box").appendChild(tempDiv)
+                    console.log("game: " + row.Game)
+                    appendImageToHTML(row.Game)
                 }));
-
         }
-
-        function getImageFromURL(term, callback) {
-            const apiKey = 'AIzaSyDr-V_LFMYf85udfJGWjVdOREweFfyfCVI'; 
-            const searchEngineId = 'b7a44942279fc4788'; 
-
-            const url = `https://www.googleapis.com/customsearch/v1?q=${term}&searchType=image&key=${apiKey}&cx=${searchEngineId}&num=1`;
-
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                if (data.items && data.items.length > 0) {
-                    callback(null, data.items[0].link);
-                } else {
-                    callback(null, "");
-                }
-                })
-                .catch(error => {
-                    console.error('Error fetching data:', error);
-                    callback("Error fetching image", null);
-                });
-        }
+        
 
 
-        function getImage(url) {
-            getImageFromURL(url, (error, imageUrl) => {
-                if (error) {
-                    console.error('Error:', error);
-                } else {
-                    console.log('First image URL:', imageUrl);
-                }
+    async function getImageUrl(searchString) {
+        const apiKey = 'AIzaSyDr-V_LFMYf85udfJGWjVdOREweFfyfCVI'; 
+        const searchEngineId = 'b7a44942279fc4788';
+        const searchUrl = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${searchEngineId}&q=${encodeURIComponent(searchString)}&searchType=image`;
+
+        try {
+            const response = await fetch(searchUrl);
+            const data = await response.json();
+            if (data.items && data.items.length > 0) {
+                return data.items[0].link; 
+            } else {
+                return null; 
             }
-        )};
-       
+        } catch (error) {
+            console.error('Error fetching image:', error);
+            return null;
+        }
+    }
+
+    async function appendImageToHTML(searchString) {
+
+        if (document.getElementById((searchString))) {
+            try {
+                const imageUrl = await getImageUrl(searchString);
+
+                if (imageUrl) {
+                    const imgElement = document.createElement("img");
+                    
+                    imgElement.src = imageUrl;
+                    imgElement.height = 100;
+                    
+                    document.getElementById((searchString)).appendChild(imgElement);
+                } else {
+                    console.log('No image found for the search string:', searchString);
+                }
+            } catch (error) {
+                console.error('Error appending image to HTML:', error);
+            }
+        }
+    }
+
 
     </script>
 </body>
