@@ -40,7 +40,7 @@
 
         function answerBoxTemplate(Game, Score) {
             return `<div class=''>
-                <h3 class='game_name'>${Game} - ${Score}</h3>
+                <h3 class='game_name'>${Game} - ${Score} - ${getImage(Game)}</h3>
             </div>`
         }
 
@@ -57,12 +57,45 @@
                 .then((data) => data.forEach(row => {
 
                     let tempDiv = document.createElement("div")
-                    console.log(row)
+                    //console.log(row)
                     tempDiv.innerHTML = answerBoxTemplate(row.Game, row.Similarity)
                     document.getElementById("answer-box").appendChild(tempDiv)
                 }));
 
         }
+
+        function getImageFromURL(term, callback) {
+            const apiKey = 'AIzaSyDr-V_LFMYf85udfJGWjVdOREweFfyfCVI'; 
+            const searchEngineId = 'b7a44942279fc4788'; 
+
+            const url = `https://www.googleapis.com/customsearch/v1?q=${term}&searchType=image&key=${apiKey}&cx=${searchEngineId}&num=1`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                if (data.items && data.items.length > 0) {
+                    callback(null, data.items[0].link);
+                } else {
+                    callback(null, "");
+                }
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    callback("Error fetching image", null);
+                });
+        }
+
+
+        function getImage(url) {
+            getImageFromURL(url, (error, imageUrl) => {
+                if (error) {
+                    console.error('Error:', error);
+                } else {
+                    console.log('First image URL:', imageUrl);
+                }
+            }
+        )};
+       
 
     </script>
 </body>
