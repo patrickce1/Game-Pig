@@ -110,8 +110,44 @@ input[type="text"] {
     /* Increase width of the text input */
 }
 
+.answer-box-scroll {
+    max-height: 800px;
+    /* Set maximum height for scrolling */
+    overflow-y: auto;
+    /* Enable vertical scrolling */
+    /* padding-right: 10px; */
+    /* Add padding to compensate for scrollbar width */
+}
+
+.answer-box-scroll .row {
+    background-color: white;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+}
+
+.answer-box-scroll .row img {
+    margin-right: 10px;
+    width: 100px;
+    height: auto;
+}
+
+.answer-box-scroll .row .game_name {
+    margin: 0;
+    font-size: 16px;
+}
+
+.answer-box-scroll .row .score {
+    margin: 0;
+    font-size: 14px;
+    color: #888;
+}
+
 #answer-box {
-    width: 100%;
+    width: 80%;
 }
 
 .game_name {

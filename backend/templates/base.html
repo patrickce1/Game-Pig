@@ -15,7 +15,7 @@
 
     <div class="full-body-container">
         <video autoplay muted loop id="background-video">
-            <source src="{{ url_for('static', filename='videos/vid2.mp4') }}" type="video/mp4">
+            <source src="{{ url_for('static', filename='videos/vid1.mp4') }}" type="video/mp4">
         </video>
         <div class="top-text">
             <div class="google-colors">
@@ -30,20 +30,47 @@
             <div class="input-box" onclick="sendFocus()">
                 <img src="{{ url_for('static', filename='images/mag.png') }}" />
                 <input placeholder="Search for a type of game you are interested in" id="filter-text-val"
-                    onkeyup="filterText()">
+                    onkeypress="handleKeyPress(event)">
             </div>
         </div>
-        <div id="answer-box"></div>
+        <div id="answer-box" class="answer-box-scroll"></div>
         <div id="imageContainer"></div>
     </div>
 
     <script>
+        let backgroundVideo = 'vid2.mp4';
 
+        // function answerBoxTemplate(Game, Score) {
+        //     return `<div class='row'>
+        //         <h3 class='game_name'>${Game} - ${Score}</h3>
+        //         <div id='${Game}' height='50px'></div>
+        //     </div>`
+        // }
         function answerBoxTemplate(Game, Score) {
-            return `<div class=''>
-                <h3 class='game_name'>${Game} - ${Score}</h3>
+            return `<div class='row'>
                 <div id='${Game}' height='50px'></div>
+                <div>
+                    <h3 class='game_name'>${Game}</h3>
+                    <p class='score'>Score: ${Score}</p>
+                </div>
             </div>`
+        }
+
+        function updateBackgroundVideo() {
+            const video = document.getElementById('background-video');
+            video.pause();
+            video.src = "{{ url_for('static', filename='videos/') }}" + backgroundVideo;
+            video.load(); // Load the new video source
+            video.play(); // Play the new video
+
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                updateBackgroundVideo();
+                filterText();
+
+            }
         }
 
         function sendFocus() {
@@ -66,49 +93,51 @@
                     appendImageToHTML(row.Game)
                 }));
         }
-        
 
 
-    async function getImageUrl(searchString) {
-        const apiKey = 'AIzaSyDr-V_LFMYf85udfJGWjVdOREweFfyfCVI'; 
-        const searchEngineId = 'b7a44942279fc4788';
-        const searchUrl = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${searchEngineId}&q=${encodeURIComponent(searchString)}&searchType=image`;
 
-        try {
-            const response = await fetch(searchUrl);
-            const data = await response.json();
-            if (data.items && data.items.length > 0) {
-                return data.items[0].link; 
-            } else {
-                return null; 
-            }
-        } catch (error) {
-            console.error('Error fetching image:', error);
-            return null;
-        }
-    }
 
-    async function appendImageToHTML(searchString) {
+        async function getImageUrl(searchString) {
+            const apiKey = 'AIzaSyDr-V_LFMYf85udfJGWjVdOREweFfyfCVI';
+            const searchEngineId = 'b7a44942279fc4788';
+            const searchUrl = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${searchEngineId}&q=${encodeURIComponent(searchString)}&searchType=image`;
 
-        if (document.getElementById((searchString))) {
             try {
-                const imageUrl = await getImageUrl(searchString);
-
-                if (imageUrl) {
-                    const imgElement = document.createElement("img");
-                    
-                    imgElement.src = imageUrl;
-                    imgElement.height = 100;
-                    
-                    document.getElementById((searchString)).appendChild(imgElement);
+                const response = await fetch(searchUrl);
+                const data = await response.json();
+                if (data.items && data.items.length > 0) {
+                    return data.items[0].link;
                 } else {
-                    console.log('No image found for the search string:', searchString);
+                    return null;
                 }
             } catch (error) {
-                console.error('Error appending image to HTML:', error);
+                console.error('Error fetching image:', error);
+                return null;
             }
         }
-    }
+
+        async function appendImageToHTML(searchString) {
+
+            if (document.getElementById((searchString))) {
+                try {
+                    const imageUrl = await getImageUrl(searchString);
+
+                    if (imageUrl) {
+                        const imgElement = document.createElement("img");
+
+                        imgElement.src = imageUrl;
+                        imgElement.height = 100;
+
+                        document.getElementById((searchString)).appendChild(imgElement);
+                    } else {
+                        console.log('No image found for the search string:', searchString);
+                    }
+                } catch (error) {
+                    console.error('Error appending image to HTML:', error);
+                }
+            }
+        }
+
 
 
     </script>
