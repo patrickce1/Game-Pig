@@ -167,3 +167,13 @@ input[type="text"] {
     z-index: -1;
     object-fit: cover;
 }
+
+.row {
+
+    background-color: rgb(252, 251, 252);
+    opacity: 0.9;
+    border-radius: 20px;
+    padding: 20px;
+    /* Set the background color */
+    /* Add other styling properties as needed */
+}

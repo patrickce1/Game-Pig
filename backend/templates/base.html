@@ -40,23 +40,19 @@
     <script>
         let backgroundVideo = 'vid2.mp4';
 
-        // function answerBoxTemplate(Game, Score) {
-        //     return `<div class='row'>
-        //         <h3 class='game_name'>${Game} - ${Score}</h3>
-        //         <div id='${Game}' height='50px'></div>
-        //     </div>`
-        // }
-        function answerBoxTemplate(Game, Score) {
+
+        function answerBoxTemplate(Game, imgElem, Score) {
             return `<div class='row'>
-                <div id='${Game}' height='50px'></div>
-                <div>
+                
+                <div class='game-info'>
+                    ${imgElem ? `<img src="${imgElem.src}" height="${imgElem.height}" width="${imgElem.width}">` : ''}
                     <h3 class='game_name'>${Game}</h3>
                     <p class='score'>Score: ${Score}</p>
                     <div class='bar-outer' id='bar-outer-${Game}'>
                         <div class='bar-inner' id='bar-inner-${Game}' style='width: ${updateProgressBar(Score, Game)};'></div>
                     </div>
                 </div>
-            </div>`
+            </div>`;
         }
 
         function updateBackgroundVideo() {
@@ -81,22 +77,21 @@
             document.getElementById('filter-text-val').focus();
         }
 
-        function filterText() {
-            document.getElementById("answer-box").innerHTML = ""
-            console.log(document.getElementById("filter-text-val").value)
-            fetch("/episodes?" + new URLSearchParams({ title: document.getElementById("filter-text-val").value }).toString())
-                .then((response) => response.json())
-                .then((data) => data.forEach(row => {
-
-                    let tempDiv = document.createElement("div")
-                    //console.log(row)
-                    tempDiv.innerHTML = answerBoxTemplate(row.Game, row.Similarity)
-                    document.getElementById("answer-box").appendChild(tempDiv)
-                    console.log("game: " + row.Game)
-                    appendImageToHTML(row.Game)
-                }));
+        async function filterText() {
+            document.getElementById("answer-box").innerHTML = "";
+            const filterTextValue = document.getElementById("filter-text-val").value;
+            console.log(filterTextValue);
+            const response = await fetch("/episodes?" + new URLSearchParams({ title: filterTextValue }).toString());
+            const data = await response.json();
+            for (const row of data) {
+                const tempDiv = document.createElement("div");
+                const imgElem = await appendImageToHTML(row.Game);
+                tempDiv.innerHTML = answerBoxTemplate(row.Game, imgElem, row.Similarity);
+                tempDiv.classList.add("answer-box");
+                document.getElementById("answer-box").appendChild(tempDiv);
+                tempDiv.setAttribute("id", row.Game);
+            }
         }
-
 
 
 
@@ -121,47 +116,53 @@
 
         async function appendImageToHTML(searchString) {
 
-            if (document.getElementById((searchString))) {
-                try {
-                    const imageUrl = await getImageUrl(searchString);
 
-                    if (imageUrl) {
-                        const imgElement = document.createElement("img");
+            try {
 
-                        imgElement.src = imageUrl;
-                        imgElement.height = 100;
+                const imageUrl = await getImageUrl(searchString);
+                const imgElement = document.createElement("img");
+                if (imageUrl) {
 
-                        document.getElementById((searchString)).appendChild(imgElement);
-                    } else {
-                        console.log('No image found for the search string:', searchString);
-                    }
-                } catch (error) {
-                    console.error('Error appending image to HTML:', error);
+                    console.log(imageUrl, "Patrick test image url", searchString)
+                    imgElement.src = imageUrl;
+                    imgElement.height = 100;
+
+
+                    return imgElement;
+
+                } else {
+                    console.log('No image found for the search string:', searchString);
                 }
+
+            } catch (error) {
+                console.error('Error appending image to HTML:', error);
             }
+
         }
 
+        // document.getElementById((searchString)).appendChild(imgElement);
 
-    // JavaScript to update the loading bar
-    function updateProgressBar(value, gameName) {
-        var progressBar = document.getElementById(("bar-inner-" + gameName));
-        return (value * 100) * 2 + 'px';
-    }
+        // JavaScript to update the loading bar
+        function updateProgressBar(value, gameName) {
+            var progressBar = document.getElementById(("bar-inner-" + gameName));
+            return (value * 100) * 2 + 'px';
+        }
 
     </script>
     <style>
-    .bar-outer {
-        width: 200px;
-        height: 10px;
-        background-color: #cacaca;
-        border-radius: 4px;
-        border:1px solid black;
-    }
-    .bar-inner {
-        height: 100%;
-        background-color: #3adb76;
-        border-radius: 4px;
-    }
+        .bar-outer {
+            width: 200px;
+            height: 10px;
+            background-color: #cacaca;
+            border-radius: 4px;
+            border: 1px solid black;
+        }
+
+        .bar-inner {
+            height: 100%;
+            background-color: #3adb76;
+            border-radius: 4px;
+        }
     </style>
 </body>
 
