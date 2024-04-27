@@ -60,7 +60,7 @@ def calculate_combined_similarity(query, doc_id):
     svd_similarity = np.dot(query_representation, doc_representation) / (np.linalg.norm(query_representation) * np.linalg.norm(doc_representation))
 
     # Combine cosine similarity and SVD similarity
-    combined_similarity = 0.7 * cosine_similarity + 0.3 * svd_similarity  # Adjust weights as needed
+    combined_similarity = 0.6 * cosine_similarity + 0.3 * svd_similarity + .1 * df[df["ID"] == doc_id]["Score"]/100 # Adjust weights as needed
 
     return combined_similarity
 
