@@ -281,7 +281,7 @@ def index_search(
         if console == "any":
             cossim=score/(qnorm * doc_norms[int(doc)])
             result.append((cossim, doc))
-        elif df[doc]["Platform"] == console:
+        elif console in df[doc]["Platform"] :
             cossim=score/(qnorm * doc_norms[int(doc)])
             result.append((cossim, doc))
     
