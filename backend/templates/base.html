@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit&family=Montserrat&family=Open+Sans:wght@500&display=swap"
         rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
 </head>
 
@@ -32,6 +33,15 @@
                 <input placeholder="Search for a type of game you are interested in" id="filter-text-val"
                     onkeypress="handleKeyPress(event)">
             </div>
+            <div class="dropdown">
+                <button class="dropbtn">Console</button>
+                <div class="dropdown-content">
+                    <a href="#">Console 1</a>
+                    <a href="#">Console 2</a>
+                    <a href="#">Console 3</a>
+                    <!-- Add more consoles as needed -->
+                </div>
+            </div>
         </div>
         <div id="answer-box" class="answer-box-scroll"></div>
         <div id="imageContainer"></div>
@@ -41,13 +51,15 @@
         let backgroundVideo = 'vid2.mp4';
 
 
-        function answerBoxTemplate(Game, imgElem, Score) {
+        function answerBoxTemplate(Game, imgElem, Score, ytlink) {
             return `<div class='row'>
                 
                 <div class='game-info'>
                     ${imgElem ? `<img src="${imgElem.src}" height="${imgElem.height}" width="${imgElem.width}">` : ''}
                     <h3 class='game_name'>${Game}</h3>
+                    <a href=${ytlink} target="_blank" class= 'game_name'> Link to Youtube trailer</h3>
                     <p class='score'>Score: ${Score}</p>
+                    
                     <div class='bar-outer' id='bar-outer-${Game}'>
                         <div class='bar-inner' id='bar-inner-${Game}' style='width: ${updateProgressBar(Score, Game)};'></div>
                     </div>
@@ -86,7 +98,15 @@
             for (const row of data) {
                 const tempDiv = document.createElement("div");
                 const imgElem = await appendImageToHTML(row.Game);
-                tempDiv.innerHTML = answerBoxTemplate(row.Game, imgElem, row.Similarity);
+                const ytlink = await getFirstYouTubeVideo(row.Game)
+                    .then(function (videoLink) {
+                        return videoLink;
+                        console.log('First video link:', videoLink);
+                    })
+                    .catch(function (error) {
+                        console.error('Error:', error);
+                    });
+                tempDiv.innerHTML = answerBoxTemplate(row.Game, imgElem, row.Similarity, ytlink);
                 tempDiv.classList.add("answer-box");
                 document.getElementById("answer-box").appendChild(tempDiv);
                 tempDiv.setAttribute("id", row.Game);
@@ -147,6 +167,42 @@
             var progressBar = document.getElementById(("bar-inner-" + gameName));
             return (value * 100) * 2 + 'px';
         }
+
+        async function getFirstYouTubeVideo(query) {
+            var apiKey = 'AIzaSyDr-V_LFMYf85udfJGWjVdOREweFfyfCVI';
+            var apiUrl = 'https://www.googleapis.com/youtube/v3/search';
+
+            // Parameters for the API request
+            var params = {
+                part: 'snippet',
+                q: (query + "trailer"),
+                maxResults: 1,
+                type: 'video',
+                key: apiKey
+            };
+
+            return new Promise(function (resolve, reject) {
+                $.getJSON(apiUrl, params, function (data) {
+                    if (data.items.length > 0) {
+                        var videoId = data.items[0].id.videoId;
+                        var videoLink = "https://www.youtube.com/watch?v=" + videoId;
+                        resolve(videoLink);
+                    } else {
+                        reject('No videos found for the query: ' + query);
+                    }
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    reject('Error while fetching videos: ' + errorThrown);
+                });
+            });
+        }
+        // Call this to get the actual result
+        getFirstYouTubeVideo(query)
+            .then(function (videoLink) {
+                console.log('First video link:', videoLink);
+            })
+            .catch(function (error) {
+                console.error('Error:', error);
+            });
 
     </script>
     <style>
