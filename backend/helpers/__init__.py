@@ -107,6 +107,19 @@ def preprocess(json_file):
     print(unique_values)
     return df
 
+def reviewOutput(json_file, doc_id):
+   """Returns the string output of a review"""
+   with open(json_file, 'r') as user_file:
+    parsed_json = json.load(user_file)
+
+    item = parsed_json[doc_id]
+    reviews = []
+    if item['Review'].startswith("[\"") or item['Review'].startswith("['"):
+        # Normalize quotes and parse as JSON
+        reviews = json.loads(item['Review'].replace("'", "\""))
+    
+    if reviews:
+        return reviews[0]
 
 def token_inverted_index(df):
     """Takes in the dataframe created from the json and produces an inverted index. 
@@ -265,7 +278,10 @@ def index_search(
 
     result = []
     for doc, score in score_func(query_word_counts, index, idf).items():
-        if df[doc]["Platform"] == console:
+        if console == "any":
+            cossim=score/(qnorm * doc_norms[int(doc)])
+            result.append((cossim, doc))
+        elif df[doc]["Platform"] == console:
             cossim=score/(qnorm * doc_norms[int(doc)])
             result.append((cossim, doc))
     

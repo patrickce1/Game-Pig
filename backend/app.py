@@ -75,7 +75,8 @@ def json_search(query, console):
         # Calculate combined similarity and include it in the sorting
         combined_similarity = calculate_combined_similarity(query, int(docID))
         game_data["Similarity"] = combined_similarity
-
+        text = reviewOutput(json_file_path, docID)
+        game_data["Text"] = text
         final_list.append(game_data.iloc[0].to_dict())
 
     # Sort final list based on combined similarity
