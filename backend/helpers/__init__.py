@@ -5,8 +5,10 @@ import math
 import numpy as np
 import pandas as pd
 import nltk
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.decomposition import TruncatedSVD
+
 nltk.download('punkt')
-# from gensim.parsing.preprocessing import remove_stopwords
 
 STOPWORDS = frozenset([
     'all', 'six', 'just', 'less', 'being', 'indeed', 'over', 'move', 'anyway', 'four', 'not', 'own', 'through',
@@ -264,31 +266,47 @@ def index_search(
       result.append((cossim, doc))
     
     return sorted(result, reverse=True, key=lambda x:x[0])
-        
 
-#____________________________________________________________________________#
+def apply_svd_to_documents(df):
+    """Apply Singular Value Decomposition (SVD) to documents in the dataframe"""
+    # Convert reviews to strings
+    df['Review_str'] = df['Review'].apply(lambda x: ' '.join(x))
+    
+    # Vectorize the text
+    vectorizer = TfidfVectorizer(stop_words='english')
+    X = vectorizer.fit_transform(df['Review_str'])
+    
+    # Apply SVD
+    svd = TruncatedSVD(n_components=50, random_state=42)
+    svd_result = svd.fit_transform(X)
+    
+    # Append SVD components to the dataframe
+    for i in range(svd_result.shape[1]):
+        df[f'SVD_{i+1}'] = svd_result[:, i]
+    
+    return df
 
+# Assuming this function will be called when loading the JSON
+def process_data(json_file):
+    """Process data from the JSON file"""
+    df = preprocess(json_file)
+    df = apply_svd_to_documents(df)
+    inv_idx = token_inverted_index(df)
+    idf = compute_idf(inv_idx, len(df))
+    norms = compute_doc_norms(inv_idx, idf, len(df))
+    return df, inv_idx, idf, norms
 
-
-    # query_tokens = set(tokenize(query.lower()))
-    # similarity_scores = {}
-
-    # for game, reviews in game_reviews_dict.items():
-
-    #     review_scores = []
-    #     for review in reviews:
-    #         review_tokens = set(tokenize(review.lower()))
-    #         score = jaccard_similarity(review_tokens, query_tokens)
-    #         review_scores.append(score)
-
-
-    #     average_score = np.max(review_scores)
-
-
-    #     similarity_scores[game] = average_score
-
-
-    # sorted_similarity_scores = sorted(similarity_scores.items(), key=lambda x: x[1], reverse=True)
-
-    # return sorted_similarity_scores
+# Assuming this function will be called when searching
+def search_query(query, df, inv_idx, idf, norms):
+    """Search for the query in the preprocessed data"""
+    sorted_matches = index_search(query, inv_idx, idf, norms)
+    final_list = []
+    for sim, docID in sorted_matches[:10]:
+        game_data = df.loc[df["ID"] == int(docID)]
+        game_data.drop("Review", axis=1, inplace=True)
+        game_data["Similarity"] = sim
+        final_list.append(game_data.iloc[0].to_dict())
+    if len(final_list) == 0:
+        final_list.append({"Game" : "No results. Please try a different query.", "Score":0})
+    return json.dumps(final_list)
 
