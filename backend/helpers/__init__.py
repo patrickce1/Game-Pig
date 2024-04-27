@@ -99,12 +99,27 @@ def preprocess(json_file):
     df["Review"] = df["Review"].apply(lambda reviews: nltk.tokenize.word_tokenize(remove_stopwords((re.sub(r'[^\w\s]', '', reviews)).lower())))
     df = df.reset_index(drop=False)
     df = df.rename(columns={'index': 'ID'})
+    df['Platform'] = df['Platform'].apply(lambda x: ast.literal_eval(x))
+
+    flattened = [item for sublist in df['Platform'] for item in sublist]
+    # Get unique values
+    unique_values = set(flattened)
+    print(unique_values)
     return df
 
-def filter(df, genre, platform_code):
-    """returns a new dataframe with only rows that Genre matches param genre and
-    Platform matches platform_code."""
-    return df[df["Genre"]==genre & df["Platform"]==platform_code]
+def reviewOutput(json_file, doc_id):
+   """Returns the string output of a review"""
+   with open(json_file, 'r') as user_file:
+    parsed_json = json.load(user_file)
+
+    item = parsed_json[doc_id]
+    reviews = []
+    if item['Review'].startswith("[\"") or item['Review'].startswith("['"):
+        # Normalize quotes and parse as JSON
+        reviews = json.loads(item['Review'].replace("'", "\""))
+    
+    if reviews:
+        return reviews[0]
 
 def token_inverted_index(df):
     """Takes in the dataframe created from the json and produces an inverted index. 
@@ -214,10 +229,12 @@ def accumulate_dot_scores(query_word_counts, index: dict, idf: dict):
     return doc_scores
 
 def index_search(
+    df,
     query: str,
     index: dict,
     idf,
     doc_norms,
+    console,
     score_func=accumulate_dot_scores,
 ):
     """Search the collection of documents for the given query
@@ -261,9 +278,12 @@ def index_search(
 
     result = []
     for doc, score in score_func(query_word_counts, index, idf).items():
-
-      cossim=score/(qnorm * doc_norms[int(doc)])
-      result.append((cossim, doc))
+        if console == "any":
+            cossim=score/(qnorm * doc_norms[int(doc)])
+            result.append((cossim, doc))
+        elif df[doc]["Platform"] == console:
+            cossim=score/(qnorm * doc_norms[int(doc)])
+            result.append((cossim, doc))
     
     return sorted(result, reverse=True, key=lambda x:x[0])
 
