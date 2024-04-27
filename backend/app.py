@@ -49,31 +49,42 @@ svd_matrix = svd.fit_transform(tfidf_matrix)
 app = Flask(__name__)
 CORS(app)
 
-def calculate_svd_similarity(query, doc_id):
+def calculate_combined_similarity(query, doc_id):
     query_representation = svd.transform(tfidf_vectorizer.transform([query]))[0]
     doc_representation = svd_matrix[doc_id]
-    return np.dot(query_representation, doc_representation) / (np.linalg.norm(query_representation) * np.linalg.norm(doc_representation))
+    
+    # Calculate cosine similarity
+    cosine_similarity = np.dot(query_representation, doc_representation) / (np.linalg.norm(query_representation) * np.linalg.norm(doc_representation))
+
+    # Calculate SVD similarity
+    svd_similarity = np.dot(query_representation, doc_representation) / (np.linalg.norm(query_representation) * np.linalg.norm(doc_representation))
+
+    # Combine cosine similarity and SVD similarity
+    combined_similarity = 0.7 * cosine_similarity + 0.3 * svd_similarity  # Adjust weights as needed
+
+    return combined_similarity
 
 def json_search(query):
     query = str(query)
     sorted_matches = index_search(query, inv_idx, idf, norms)
     final_list = []
-    for sim, docID in sorted_matches[:10]:
+    for _, docID in sorted_matches[:10]:
         game_data = df.loc[df["ID"] == int(docID)]
         game_data.drop("Review", axis=1, inplace=True)
-        game_data["Similarity"] = sim
+        
+        # Calculate combined similarity and include it in the sorting
+        combined_similarity = calculate_combined_similarity(query, int(docID))
+        game_data["Similarity"] = combined_similarity
 
-        # Calculate SVD similarity and include it in the sorting
-        svd_similarity = calculate_svd_similarity(query, int(docID))
-        final_list.append((svd_similarity, game_data.iloc[0].to_dict()))
+        final_list.append(game_data.iloc[0].to_dict())
 
-    # Sort final list based on SVD similarity
-    final_list.sort(reverse=True, key=lambda x: x[0])
+    # Sort final list based on combined similarity
+    final_list.sort(reverse=True, key=lambda x: x["Similarity"])
 
     if len(final_list) == 0:
         final_list.append({"Game": "No results. Please try a different query.", "Score": 0})
 
-    return json.dumps([game_dict for _, game_dict in final_list])
+    return json.dumps(final_list)
 
 @app.route("/")
 def home():
