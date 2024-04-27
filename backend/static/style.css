@@ -204,7 +204,12 @@ input[type="text"] {
     display: none;
     position: absolute;
     background-color: #f9f9f9;
-    min-width: 160px;
+    width: 200px;
+    /* Set a fixed width for the dropdown menu */
+    max-height: 200px;
+    /* Set a maximum height for the dropdown menu */
+    overflow-y: auto;
+    /* Add a vertical scrollbar when content overflows */
     z-index: 1;
 }
 

@@ -93,6 +93,7 @@ def home():
 
 @app.route("/episodes")
 def episodes_search():
+    print(request.args)
     text = request.args.get("title")
     console = request.args.get("console")
     return json_search(text, console)

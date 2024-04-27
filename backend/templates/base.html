@@ -34,11 +34,36 @@
                     onkeypress="handleKeyPress(event)">
             </div>
             <div class="dropdown">
-                <button class="dropbtn">Console</button>
+                <button class="dropbtn" onclick=" handleButtonClick()">Choose your Console </button>
                 <div class="dropdown-content">
-                    <a href="#">Console 1</a>
-                    <a href="#">Console 2</a>
-                    <a href="#">Console 3</a>
+                    <a onclick="handleItemClick('any')">--any--</a>
+                    <a onclick="handleItemClick('PSV')">PSV</a>
+                    <a onclick="handleItemClick('PS3')">PS3</a>
+                    <a onclick="handleItemClick('DS')">DS</a>
+                    <a onclick="handleItemClick('PSP')">PSP</a>
+                    <a onclick="handleItemClick('SAT')">SAT</a>
+                    <a onclick="handleItemClick('SNES')">SNES</a>
+                    <a onclick="handleItemClick('PS2')">PS2</a>
+                    <a onclick="handleItemClick('NG')">NG</a>
+                    <a onclick="handleItemClick('PS')">PS</a>
+                    <a onclick="handleItemClick('XB')">XB</a>
+                    <a onclick="handleItemClick('DC')">DC</a>
+                    <a onclick="handleItemClick('N64')">N64</a>
+                    <a onclick="handleItemClick('PC')">PC</a>
+                    <a onclick="handleItemClick('SCD')">SCD</a>
+                    <a onclick="handleItemClick('X360')">X360</a>
+                    <a onclick="handleItemClick('3DS')">3DS</a>
+                    <a onclick="handleItemClick('WS')">WS</a>
+                    <a onclick="handleItemClick('Wii')">Wii</a>
+                    <a onclick="handleItemClick('GC')">GC</a>
+                    <a onclick="handleItemClick('NES')">NES</a>
+                    <a onclick="handleItemClick('GBA')">GBA</a>
+                    <a onclick="handleItemClick('GB')">GB</a>
+                    <a onclick="handleItemClick('GEN')">GEN</a>
+                    <a onclick="handleItemClick('WiiU')">WiiU</a>
+                    <a onclick="handleItemClick('XOne')">XOne</a>
+                    <a onclick="handleItemClick('PS4')">PS4</a>
+                    <a onclick="handleItemClick('2600')">2600</a>
                     <!-- Add more consoles as needed -->
                 </div>
             </div>
@@ -49,7 +74,22 @@
 
     <script>
         let backgroundVideo = 'vid2.mp4';
+        let selectedConsole = 'any';
+        function handleButtonClick() {
+            var dropdownContent = document.querySelector(".dropdown-content");
+            if (dropdownContent.style.display === "none") {
+                dropdownContent.style.display = "block";
+            }
+            else {
+                dropdownContent.style.display = "none";
+            }
+        }
 
+        function handleItemClick(element) {
+            selectedConsole = element;
+            var dropdownContent = document.querySelector(".dropdown-content");
+            dropdownContent.style.display = "none";
+        }
 
         function answerBoxTemplate(Game, imgElem, Score, ytlink) {
             return `<div class='row'>
@@ -92,8 +132,9 @@
         async function filterText() {
             document.getElementById("answer-box").innerHTML = "";
             const filterTextValue = document.getElementById("filter-text-val").value;
+            const dropdownItems = document.querySelectorAll(".dropdown-content a");
             console.log(filterTextValue);
-            const response = await fetch("/episodes?" + new URLSearchParams({ title: filterTextValue }).toString());
+            const response = await fetch("/episodes?" + new URLSearchParams({ title: filterTextValue, console: selectedConsole }).toString());
             const data = await response.json();
             for (const row of data) {
                 const tempDiv = document.createElement("div");
