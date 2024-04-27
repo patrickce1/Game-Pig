@@ -64,9 +64,9 @@ def calculate_combined_similarity(query, doc_id):
 
     return combined_similarity
 
-def json_search(query):
+def json_search(query, console):
     query = str(query)
-    sorted_matches = index_search(query, inv_idx, idf, norms)
+    sorted_matches = index_search(df, query, inv_idx, idf, norms, console)
     final_list = []
     for _, docID in sorted_matches[:10]:
         game_data = df.loc[df["ID"] == int(docID)]
@@ -82,7 +82,7 @@ def json_search(query):
     final_list.sort(reverse=True, key=lambda x: x["Similarity"])
 
     if len(final_list) == 0:
-        final_list.append({"Game": "No results. Please try a different query.", "Score": 0})
+        final_list.append({"Game": "No results. Please try a different query.", "Similarity": 0})
 
     return json.dumps(final_list)
 
@@ -93,7 +93,8 @@ def home():
 @app.route("/episodes")
 def episodes_search():
     text = request.args.get("title")
-    return json_search(text)
+    console = request.args.get("console")
+    return json_search(text, console)
 
 if 'DB_NAME' not in os.environ:
     app.run(debug=True, host="0.0.0.0", port=5000)
