@@ -66,17 +66,28 @@ def calculate_combined_similarity(query, doc_id):
 
 def json_search(query, console):
     query = str(query)
-    sorted_matches = index_search(df, query, inv_idx, idf, norms, console)
+    sorted_matches = index_search(query, inv_idx, idf, norms)
     final_list = []
+    print(type[df["Platform"]])
+    if console != "any":
+        filtered = []
+        for score, doc_id in sorted_matches:
+            print (df[df["ID"]==doc_id]["Platform"].tolist())
+            if console in ((df[df["ID"]==doc_id]["Platform"]).tolist())[0]:
+                filtered.append((score,doc_id))
+        sorted_matches = filtered
+
     for _, docID in sorted_matches[:10]:
         game_data = df.loc[df["ID"] == int(docID)]
-        game_data.drop("Review", axis=1, inplace=True)
         
         # Calculate combined similarity and include it in the sorting
         combined_similarity = calculate_combined_similarity(query, int(docID))
         game_data["Similarity"] = combined_similarity
         text = reviewOutput(json_file_path, docID)
+        print(type(text))
+        print(text)
         game_data["Review"] = text
+        print(text[0])
         final_list.append(game_data.iloc[0].to_dict())
 
     # Sort final list based on combined similarity

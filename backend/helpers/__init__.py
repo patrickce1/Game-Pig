@@ -99,22 +99,17 @@ def preprocess(json_file):
     df["Review"] = df["Review"].apply(lambda reviews: nltk.tokenize.word_tokenize(remove_stopwords((re.sub(r'[^\w\s]', '', reviews)).lower())))
     df = df.reset_index(drop=False)
     df = df.rename(columns={'index': 'ID'})
-    df['Platform'] = df['Platform'].apply(lambda x: ast.literal_eval(x))
-
-    flattened = [item for sublist in df['Platform'] for item in sublist]
-    # Get unique values
-    unique_values = set(flattened)
-    print(unique_values)
+    df['Platform'] = df['Platform'].apply(eval)    
     return df
 
 def reviewOutput(json_file, doc_id):
    """Returns the string output of a review"""
    with open(json_file, 'r') as user_file:
-    df = pd.read_json(user_file)
-    df = df.reset_index(drop=False)
-    df = df.rename(columns={'index': 'ID'})
-    first_review = str(df[df["ID"]==doc_id]["Review"])
-    print(first_review)
+    tempdf = pd.read_json(user_file)
+    tempdf = tempdf.reset_index(drop=False)
+    tempdf = tempdf.rename(columns={'index': 'ID'})
+    tempdf["Review"] = tempdf["Review"].apply(eval)
+    first_review = str(tempdf[tempdf["ID"]==doc_id]["Review"])
     return first_review[1: first_review.find("\"")]
 
 def token_inverted_index(df):
@@ -225,13 +220,10 @@ def accumulate_dot_scores(query_word_counts, index: dict, idf: dict):
     return doc_scores
 
 def index_search(
-    df,
     query: str,
     index: dict,
     idf,
-    doc_norms,
-    console,
-    score_func=accumulate_dot_scores,
+    doc_norms
 ):
     """Search the collection of documents for the given query
 
@@ -243,10 +235,6 @@ def index_search(
     index: an inverted index as above
     idf: idf values precomputed as above
     doc_norms: document norms as computed above
-    score_func: function,
-        A function that computes the numerator term of cosine similarity (the dot product) for all documents.
-        Takes as input a dictionary of query word counts, the inverted index, and precomputed idf values.
-        (See Q7)
     Returns
     =======
 
@@ -256,32 +244,31 @@ def index_search(
         with the highest score.
     """
 
-    #convert query into dictionary of word:freq
+    # Convert query into dictionary of word:freq
     q_tokens = nltk.tokenize.word_tokenize(remove_stopwords((re.sub(r'[^\w\s]', '', query)).lower()))
-    #convert tokens to dict
+    
+    # Convert tokens to dict
     query_word_counts = {}
     for token in q_tokens:
         if token not in query_word_counts:
-            query_word_counts[token]=0
-        query_word_counts[token]+=1
+            query_word_counts[token] = 0
+        query_word_counts[token] += 1
 
-    #compute norm of query
-    qnorm=0
+    # Compute norm of query
+    qnorm = 0
     for word, freq in query_word_counts.items():
-      if word in idf:
-        qnorm+=((freq*idf[word])**2)
-    qnorm=np.sqrt(qnorm)
+        if word in idf:
+            qnorm += ((freq * idf[word]) ** 2)
+    qnorm = np.sqrt(qnorm)
 
     result = []
-    for doc, score in score_func(query_word_counts, index, idf).items():
-        if console == "any":
-            cossim=score/(qnorm * doc_norms[int(doc)])
-            result.append((cossim, doc))
-        elif console in df[df["ID"]==doc]["Platform"] :
-            cossim=score/(qnorm * doc_norms[int(doc)])
-            result.append((cossim, doc))
-    
-    return sorted(result, reverse=True, key=lambda x:x[0])
+    # Call the score_func with appropriate arguments
+    doc_scores = accumulate_dot_scores(query_word_counts, index, idf)
+    for doc, score in doc_scores.items():
+        cossim = score / (qnorm * doc_norms[int(doc)])
+        result.append((cossim, int(doc)))
+
+    return sorted(result, reverse=True, key=lambda x: x[0])
 
 def apply_svd_to_documents(df):
     """Apply Singular Value Decomposition (SVD) to documents in the dataframe"""
