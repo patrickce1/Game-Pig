@@ -91,18 +91,33 @@
             dropdownContent.style.display = "none";
         }
 
-        function answerBoxTemplate(Game, imgElem, Score, ytlink) {
+        // `<div class='row'>
+
+        //         <div class='game-info'>
+        //             ${imgElem ? `<img src="${imgElem.src}" height="${imgElem.height}" width="${imgElem.width}">` : ''}
+        //             <h3 class='game_name'>${Game}</h3>
+        //             <a href=${ytlink} target="_blank" class= 'game_name'> Link to Youtube trailer</h3>
+        //             <p class='score'>Score: ${Score}</p>
+
+        //             <div class='bar-outer' id='bar-outer-${Game}'>
+        //                 <div class='bar-inner' id='bar-inner-${Game}' style='width: ${updateProgressBar(Score, Game)};'></div>
+        //             </div>
+        //         </div>
+        //     </div>`;
+        function answerBoxTemplate(Game, imgElem, Score, ytlink, review) {
             return `<div class='row'>
-                
                 <div class='game-info'>
                     ${imgElem ? `<img src="${imgElem.src}" height="${imgElem.height}" width="${imgElem.width}">` : ''}
                     <h3 class='game_name'>${Game}</h3>
-                    <a href=${ytlink} target="_blank" class= 'game_name'> Link to Youtube trailer</h3>
+                    <a href=${ytlink} target="_blank" class= 'game_name'> Link to Youtube trailer</a>
                     <p class='score'>Score: ${Score}</p>
-                    
                     <div class='bar-outer' id='bar-outer-${Game}'>
                         <div class='bar-inner' id='bar-inner-${Game}' style='width: ${updateProgressBar(Score, Game)};'></div>
                     </div>
+                </div>
+                <div class='top-review-section'>
+                    <h3>Top Review</h3>
+                    <p>${review}.</p>
                 </div>
             </div>`;
         }
@@ -147,7 +162,9 @@
                     .catch(function (error) {
                         console.error('Error:', error);
                     });
-                tempDiv.innerHTML = answerBoxTemplate(row.Game, imgElem, row.Similarity, ytlink);
+
+                console.log("This is rev", row.Review);
+                tempDiv.innerHTML = answerBoxTemplate(row.Game, imgElem, row.Similarity, ytlink, row.Review);
                 tempDiv.classList.add("answer-box");
                 document.getElementById("answer-box").appendChild(tempDiv);
                 tempDiv.setAttribute("id", row.Game);
