@@ -87,6 +87,7 @@ def json_search(query, console):
             break
         
         game_data = df.loc[df["ID"] == int(docID)]
+        game_data["Similarity"] = score
 
         if console == "any":
             text = str(tempdf[tempdf["ID"]==docID].get(["Review"]))
@@ -96,7 +97,7 @@ def json_search(query, console):
         else:
             if console in game_data["Platform"].tolist()[0]:
                 text = str(tempdf[tempdf["ID"]==docID].get(["Review"]))
-                game_data["Review"] = text[text.find("["):]
+                game_data["Review"] = text[text.find("["+1):]
                 final_list.append(game_data.iloc[0].to_dict())
 
 
