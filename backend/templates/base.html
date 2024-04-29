@@ -100,12 +100,13 @@
         }
         function answerBoxTemplate(Game, imgElem, Score, ytlink, review, platforms, reviewScore) {
             let num_stars = Math.floor(reviewScore / 20);
+
             return `<div class='row'>
         <div class='game-info'>
             ${imgElem ? `<img src="${imgElem.src}" height="${imgElem.height}" width="${imgElem.width}">` : ''}
             <h3 class='game_name'>${Game}</h3>
             <a href=${ytlink} target="_blank" class='game_name'> Link to Youtube trailer</a>
-            <p class='score'>Score: ${Score}</p>
+            <p class='score'>Similarity: ${Score * 100}%</p>
             <div class='bar-outer' id='bar-outer-${Game}'>
                 <div class='bar-inner' id='bar-inner-${Game}' style='width: ${updateProgressBar(Score, Game)};'></div>
             </div>
