@@ -100,6 +100,9 @@
         }
         function answerBoxTemplate(Game, imgElem, Score, ytlink, review, platforms, reviewScore) {
             let num_stars = Math.floor(reviewScore / 20);
+            for (let i = 0; i < platforms.length; i++) {
+                platforms[i] = " " + platforms[i];
+            }
 
             return `<div class='row'>
         <div class='game-info'>
@@ -122,7 +125,7 @@
                     
                 </div>
                 <div class='top-review-bubble'>
-                    <span class='bubble-text'>Available Platforms - ${platforms}</span>
+                    <span class='bubble-text'>Available Platforms -${platforms}</span>
                     
                 </div>
                 
