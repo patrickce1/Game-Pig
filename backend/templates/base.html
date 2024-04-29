@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit&family=Montserrat&family=Open+Sans:wght@500&display=swap"
         rel="stylesheet">
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
 </head>
@@ -77,6 +78,9 @@
 
         let backgroundVideo = 'vid2.mp4';
         let selectedConsole = 'any';
+
+
+
         function handleButtonClick() {
             var dropdownContent = document.querySelector(".dropdown-content");
             if (dropdownContent.style.display === "none") {
@@ -94,30 +98,41 @@
             updateBackgroundVideo();
             filterText();
         }
-
-        function answerBoxTemplate(Game, imgElem, Score, ytlink, review, platforms) {
+        function answerBoxTemplate(Game, imgElem, Score, ytlink, review, platforms, reviewScore) {
+            let num_stars = Math.floor(reviewScore / 20);
             return `<div class='row'>
-                <div class='game-info'>
-                    ${imgElem ? `<img src="${imgElem.src}" height="${imgElem.height}" width="${imgElem.width}">` : ''}
-                    <h3 class='game_name'>${Game}</h3>
-                    <a href=${ytlink} target="_blank" class= 'game_name'> Link to Youtube trailer</a>
-                    <p class='score'>Score: ${Score}</p>
-                    <div class='bar-outer' id='bar-outer-${Game}'>
-                        <div class='bar-inner' id='bar-inner-${Game}' style='width: ${updateProgressBar(Score, Game)};'></div>
-                    </div>
-                </div>
-                <div class='vertical-line'></div>
-                <div class='top-review-section'>
-                    <div class='top-review-bubble'>
-                    <span class='bubble-text'>Available Platforms - ${platforms}</span>
-                    </div>
+        <div class='game-info'>
+            ${imgElem ? `<img src="${imgElem.src}" height="${imgElem.height}" width="${imgElem.width}">` : ''}
+            <h3 class='game_name'>${Game}</h3>
+            <a href=${ytlink} target="_blank" class='game_name'> Link to Youtube trailer</a>
+            <p class='score'>Score: ${Score}</p>
+            <div class='bar-outer' id='bar-outer-${Game}'>
+                <div class='bar-inner' id='bar-inner-${Game}' style='width: ${updateProgressBar(Score, Game)};'></div>
+            </div>
+        </div>
+        <div class='vertical-line'></div>
+        <div class='top-review-section'>
+                    <div >
+                    <span class= ${num_stars >= 1 ? 'checked-star' : 'unchecked-star'} >☆</span >
+                    <span class= ${num_stars >= 2 ? 'checked-star' : 'unchecked-star'} >☆</span >
+                    <span class= ${num_stars >= 3 ? 'checked-star' : 'unchecked-star'} >☆</span >
+                    <span class= ${num_stars >= 4 ? 'checked-star' : 'unchecked-star'} >☆</span >
+                    <span class= ${num_stars >= 5 ? 'checked-star' : 'unchecked-star'} >☆</span >
                     
-                    <h3>Top Review</h3>
-                    <p>${review}.</p>
+                </div>
+                <div class='top-review-bubble'>
+                    <span class='bubble-text'>Available Platforms - ${platforms}</span>
+                    
                 </div>
                 
-            </div>`;
+            
+            <h5>Top Review</h5>
+            <p>${review}.</p>
+            </div>
+        </div>`;
         }
+
+
 
         function updateBackgroundVideo() {
             const video = document.getElementById('background-video');
@@ -147,7 +162,9 @@
             const filterTextValue = document.getElementById("filter-text-val").value;
             const dropdownItems = document.querySelectorAll(".dropdown-content a");
             console.log(filterTextValue);
-            const response = await fetch("/episodes?" + new URLSearchParams({ title: filterTextValue, console: selectedConsole }).toString());
+            const response = await fetch("/episodes?" + new URLSearchParams({
+                title: filterTextValue, console: selectedConsole
+            }).toString());
             const data = await response.json();
             for (const row of data) {
                 const tempDiv = document.createElement("div");
@@ -155,14 +172,15 @@
                 const ytlink = await getFirstYouTubeVideo(row.Game)
                     .then(function (videoLink) {
                         return videoLink;
-                        console.log('First video link:', videoLink);
+
                     })
                     .catch(function (error) {
                         console.error('Error:', error);
                     });
 
-                console.log("This is rev", row.Review);
-                tempDiv.innerHTML = answerBoxTemplate(row.Game, imgElem, row.Similarity, ytlink, row.Review, row.Platform);
+
+                tempDiv.innerHTML = answerBoxTemplate(row.Game, imgElem, row.Similarity, ytlink, row.Review, row.Platform,
+                    row.Score);
                 tempDiv.classList.add("answer-box");
                 document.getElementById("answer-box").appendChild(tempDiv);
                 tempDiv.setAttribute("id", row.Game);
@@ -174,7 +192,8 @@
         async function getImageUrl(searchString) {
             const apiKey = 'AIzaSyDr-V_LFMYf85udfJGWjVdOREweFfyfCVI';
             const searchEngineId = 'b7a44942279fc4788';
-            const searchUrl = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${searchEngineId}&q=${encodeURIComponent(searchString)}&searchType=image`;
+            const searchUrl =
+                `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${searchEngineId}&q=${encodeURIComponent(searchString)}&searchType=image`;
 
             try {
                 const response = await fetch(searchUrl);
@@ -198,8 +217,6 @@
                 const imageUrl = await getImageUrl(searchString);
                 const imgElement = document.createElement("img");
                 if (imageUrl) {
-
-                    console.log(imageUrl, "Patrick test image url", searchString)
                     imgElement.src = imageUrl;
                     imgElement.height = 100;
 
