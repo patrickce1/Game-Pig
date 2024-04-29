@@ -32,7 +32,7 @@ with open(json_file_path, 'r') as file:
     norms = compute_doc_norms(inv_idx, idf, len(df))
 
 # Define SVD parameters
-n_components = 100  # Adjust as needed
+n_components = 20  # Adjust as needed
 random_state = 42  # For reproducibility
 
 # Preprocess text for SVD
@@ -49,49 +49,49 @@ svd_matrix = svd.fit_transform(tfidf_matrix)
 app = Flask(__name__)
 CORS(app)
 
-def calculate_combined_similarity(query, doc_id):
+def calculate_combined_similarity(query, doc_id, cossim):
     query_representation = svd.transform(tfidf_vectorizer.transform([query]))[0]
     doc_representation = svd_matrix[doc_id]
     
-    # Calculate cosine similarity
-    cosine_similarity = np.dot(query_representation, doc_representation) / (np.linalg.norm(query_representation) * np.linalg.norm(doc_representation))
-
     # Calculate SVD similarity
     svd_similarity = np.dot(query_representation, doc_representation) / (np.linalg.norm(query_representation) * np.linalg.norm(doc_representation))
 
     # Combine cosine similarity and SVD similarity
-    combined_similarity = 0.6 * cosine_similarity + 0.3 * svd_similarity + .1 * df[df["ID"] == doc_id]["Score"]/100 # Adjust weights as needed
+    combined_similarity = 0.6 * cossim + 0.3 * svd_similarity + .1 * df[df["ID"] == doc_id]["Score"]/100 # Adjust weights as needed
 
     return combined_similarity
 
+def sorted_combined_similarities(query):
+    sorted_matches = index_search(query, inv_idx, idf, norms)
+    result = []
+    for cos_score, docID in sorted_matches:
+        newSim = calculate_combined_similarity(query, docID, cos_score)
+        result.append((float(newSim), docID))
+    
+    return sorted(result, reverse=True, key=lambda x: x[0])
+
+
 def json_search(query, console):
     query = str(query)
-    sorted_matches = index_search(query, inv_idx, idf, norms)
+    sorted_matches = sorted_combined_similarities(query)
     final_list = []
-    print(type[df["Platform"]])
-    if console != "any":
-        filtered = []
-        for score, doc_id in sorted_matches:
-            print (df[df["ID"]==doc_id]["Platform"].tolist())
-            if console in ((df[df["ID"]==doc_id]["Platform"]).tolist())[0]:
-                filtered.append((score,doc_id))
-        sorted_matches = filtered
 
-    for _, docID in sorted_matches[:10]:
-        game_data = df.loc[df["ID"] == int(docID)]
+    for score, docID in sorted_matches:
+        if len(final_list) == 10:
+            break
         
-        # Calculate combined similarity and include it in the sorting
-        combined_similarity = calculate_combined_similarity(query, int(docID))
-        game_data["Similarity"] = combined_similarity
-        text = reviewOutput(json_file_path, docID)
-        print(type(text))
-        print(text)
-        game_data["Review"] = text
-        print(text[0])
-        final_list.append(game_data.iloc[0].to_dict())
+        game_data = df.loc[df["ID"] == int(docID)]
 
-    # Sort final list based on combined similarity
-    final_list.sort(reverse=True, key=lambda x: x["Similarity"])
+        if console == "any":
+            text = reviewOutput(json_file_path, docID)
+            game_data["Review"] = text
+            final_list.append(game_data.iloc[0].to_dict())
+        else:
+            if console in game_data["Platform"].tolist()[0]:
+                text = reviewOutput(json_file_path, docID)
+                game_data["Review"] = text
+                final_list.append(game_data.iloc[0].to_dict())
+
 
     if len(final_list) == 0:
         final_list.append({"Game": "No results. Please try a different query.", "Similarity": 0})

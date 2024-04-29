@@ -268,7 +268,7 @@ def index_search(
         cossim = score / (qnorm * doc_norms[int(doc)])
         result.append((cossim, int(doc)))
 
-    return sorted(result, reverse=True, key=lambda x: x[0])
+    return result
 
 def apply_svd_to_documents(df):
     """Apply Singular Value Decomposition (SVD) to documents in the dataframe"""
@@ -288,28 +288,3 @@ def apply_svd_to_documents(df):
         df[f'SVD_{i+1}'] = svd_result[:, i]
     
     return df
-
-# Assuming this function will be called when loading the JSON
-def process_data(json_file):
-    """Process data from the JSON file"""
-    df = preprocess(json_file)
-    df = apply_svd_to_documents(df)
-    inv_idx = token_inverted_index(df)
-    idf = compute_idf(inv_idx, len(df))
-    norms = compute_doc_norms(inv_idx, idf, len(df))
-    return df, inv_idx, idf, norms
-
-# Assuming this function will be called when searching
-def search_query(query, df, inv_idx, idf, norms):
-    """Search for the query in the preprocessed data"""
-    sorted_matches = index_search(query, inv_idx, idf, norms)
-    final_list = []
-    for sim, docID in sorted_matches[:10]:
-        game_data = df.loc[df["ID"] == int(docID)]
-        game_data.drop("Review", axis=1, inplace=True)
-        game_data["Similarity"] = sim
-        final_list.append(game_data.iloc[0].to_dict())
-    if len(final_list) == 0:
-        final_list.append({"Game" : "No results. Please try a different query.", "Score":0})
-    return json.dumps(final_list)
-
