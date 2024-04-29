@@ -73,6 +73,8 @@
     </div>
 
     <script>
+
+
         let backgroundVideo = 'vid2.mp4';
         let selectedConsole = 'any';
         function handleButtonClick() {
@@ -89,21 +91,10 @@
             selectedConsole = element;
             var dropdownContent = document.querySelector(".dropdown-content");
             dropdownContent.style.display = "none";
+            updateBackgroundVideo();
+            filterText();
         }
 
-        // `<div class='row'>
-
-        //         <div class='game-info'>
-        //             ${imgElem ? `<img src="${imgElem.src}" height="${imgElem.height}" width="${imgElem.width}">` : ''}
-        //             <h3 class='game_name'>${Game}</h3>
-        //             <a href=${ytlink} target="_blank" class= 'game_name'> Link to Youtube trailer</h3>
-        //             <p class='score'>Score: ${Score}</p>
-
-        //             <div class='bar-outer' id='bar-outer-${Game}'>
-        //                 <div class='bar-inner' id='bar-inner-${Game}' style='width: ${updateProgressBar(Score, Game)};'></div>
-        //             </div>
-        //         </div>
-        //     </div>`;
         function answerBoxTemplate(Game, imgElem, Score, ytlink, review) {
             return `<div class='row'>
                 <div class='game-info'>
@@ -253,31 +244,9 @@
                 });
             });
         }
-        // Call this to get the actual result
-        getFirstYouTubeVideo(query)
-            .then(function (videoLink) {
-                console.log('First video link:', videoLink);
-            })
-            .catch(function (error) {
-                console.error('Error:', error);
-            });
 
     </script>
-    <style>
-        .bar-outer {
-            width: 200px;
-            height: 10px;
-            background-color: #cacaca;
-            border-radius: 4px;
-            border: 1px solid black;
-        }
 
-        .bar-inner {
-            height: 100%;
-            background-color: #3adb76;
-            border-radius: 4px;
-        }
-    </style>
 </body>
 
 </html>
