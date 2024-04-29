@@ -95,7 +95,7 @@
             filterText();
         }
 
-        function answerBoxTemplate(Game, imgElem, Score, ytlink, review) {
+        function answerBoxTemplate(Game, imgElem, Score, ytlink, review, platforms) {
             return `<div class='row'>
                 <div class='game-info'>
                     ${imgElem ? `<img src="${imgElem.src}" height="${imgElem.height}" width="${imgElem.width}">` : ''}
@@ -106,10 +106,16 @@
                         <div class='bar-inner' id='bar-inner-${Game}' style='width: ${updateProgressBar(Score, Game)};'></div>
                     </div>
                 </div>
+                <div class='vertical-line'></div>
                 <div class='top-review-section'>
+                    <div class='top-review-bubble'>
+                    <span class='bubble-text'>Available Platforms - ${platforms}</span>
+                    </div>
+                    
                     <h3>Top Review</h3>
                     <p>${review}.</p>
                 </div>
+                
             </div>`;
         }
 
@@ -119,6 +125,7 @@
             video.src = "{{ url_for('static', filename='videos/') }}" + backgroundVideo;
             video.load(); // Load the new video source
             video.play(); // Play the new video
+            video.playbackRate = 0.7;
 
         }
 
@@ -155,7 +162,7 @@
                     });
 
                 console.log("This is rev", row.Review);
-                tempDiv.innerHTML = answerBoxTemplate(row.Game, imgElem, row.Similarity, ytlink, row.Review);
+                tempDiv.innerHTML = answerBoxTemplate(row.Game, imgElem, row.Similarity, ytlink, row.Review, row.Platform);
                 tempDiv.classList.add("answer-box");
                 document.getElementById("answer-box").appendChild(tempDiv);
                 tempDiv.setAttribute("id", row.Game);

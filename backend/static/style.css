@@ -250,3 +250,25 @@ input[type="text"] {
     background-color: #3adb76;
     border-radius: 4px;
 }
+
+.vertical-line {
+    border-left: 5px solid black;
+    /* Change color or size as needed */
+    height: 100%;
+    /* Adjust height as needed */
+    margin: 0 10px;
+    /* Adjust margin as needed */
+}
+
+.top-review-bubble {
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+.bubble-text {
+    font-weight: bold;
+    color: #333;
+}

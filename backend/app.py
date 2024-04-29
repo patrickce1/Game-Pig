@@ -29,7 +29,7 @@ with open(json_file_path, 'r') as file:
     tempdf = pd.read_json(file)
     tempdf = tempdf.reset_index(drop=False)
     tempdf = tempdf.rename(columns={'index': 'ID'})
-    tempdf["Review"] = tempdf["Review"].apply(eval)
+    tempdf["Review"] = tempdf["Review"].apply(str)
 
 
     df = preprocess(json_file_path)
@@ -90,14 +90,29 @@ def json_search(query, console):
         game_data["Similarity"] = score
 
         if console == "any":
-            text = str(tempdf[tempdf["ID"]==docID].get(["Review"]))
-            print(text)
-            game_data["Review"] = text[text.find("[")+1:]
+            text = tempdf[tempdf["ID"]==docID]["Review"].values[0]
+    
+            fin_ind=text.find("[")+1
+            sing_quote= text.find("\', ")
+            doub_quote= text.find("\", ")
+            if sing_quote > doub_quote:
+                fin_ind= doub_quote
+            else:
+                fin_ind= sing_quote
+                    
+            game_data["Review"] = text[text.find("[")+1: fin_ind]
             final_list.append(game_data.iloc[0].to_dict())
         else:
             if console in game_data["Platform"].tolist()[0]:
-                text = str(tempdf[tempdf["ID"]==docID].get(["Review"]))
-                game_data["Review"] = text[text.find("["+1):]
+                text = tempdf[tempdf["ID"]==docID]["Review"].values[0]
+                fin_ind=text.find("[")+1
+                sing_quote= text.find("\', ")
+                doub_quote= text.find("\", ")
+                if sing_quote > doub_quote:
+                    fin_ind= doub_quote
+                else:
+                    fin_ind= sing_quote
+                game_data["Review"] = text[text.find("[")+1:fin_ind]
                 final_list.append(game_data.iloc[0].to_dict())
 
 
