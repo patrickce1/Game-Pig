@@ -26,6 +26,12 @@ json_file_path = os.path.join(current_directory, 'init.json')
 
 # Assuming your JSON data is stored in a file named 'init.json'
 with open(json_file_path, 'r') as file:
+    tempdf = pd.read_json(file)
+    tempdf = tempdf.reset_index(drop=False)
+    tempdf = tempdf.rename(columns={'index': 'ID'})
+    tempdf["Review"] = tempdf["Review"].apply(eval)
+
+
     df = preprocess(json_file_path)
     inv_idx = token_inverted_index(df)
     idf = compute_idf(inv_idx, len(df))
@@ -83,13 +89,14 @@ def json_search(query, console):
         game_data = df.loc[df["ID"] == int(docID)]
 
         if console == "any":
-            text = reviewOutput(json_file_path, docID)
-            game_data["Review"] = text
+            text = str(tempdf[tempdf["ID"]==docID].get(["Review"]))
+            print(text)
+            game_data["Review"] = text[text.find("[")+1:]
             final_list.append(game_data.iloc[0].to_dict())
         else:
             if console in game_data["Platform"].tolist()[0]:
-                text = reviewOutput(json_file_path, docID)
-                game_data["Review"] = text
+                text = str(tempdf[tempdf["ID"]==docID].get(["Review"]))
+                game_data["Review"] = text[text.find("["):]
                 final_list.append(game_data.iloc[0].to_dict())
 
 
